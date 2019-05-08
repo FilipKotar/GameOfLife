@@ -1,0 +1,393 @@
+\documentclass[12pt]{article}
+
+\usepackage{graphicx}
+\usepackage{paralist}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{hhline}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{multicol}
+
+\oddsidemargin 0mm
+\evensidemargin 0mm
+\textwidth 160mm
+\textheight 200mm
+\renewcommand\baselinestretch{1.0}
+
+\pagestyle {plain}
+\pagenumbering{arabic}
+
+\newcounter{stepnum}
+
+%% Comments
+
+\usepackage{color}
+
+\newif\ifcomments\commentstrue
+
+\ifcomments
+\newcommand{\authornote}[3]{\textcolor{#1}{[#3 ---#2]}}
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+\else
+\newcommand{\authornote}[3]{}
+\newcommand{\todo}[1]{}
+\fi
+
+\newcommand{\wss}[1]{\authornote{blue}{SS}{#1}}
+
+\title{Assignment 4 Specification}
+\author{SFWR ENG 2AA4}
+
+\begin {document}
+
+\maketitle
+
+\noindent This Module Interface Specification (MIS) document contains modules, types and methods for implementing the game state of 
+a game of John Conway's Game of Life. The game involves a grid of alive and dead cells placed in an initial state by the player. The player
+may choose where to place the alive cells and dead cells. The game determines the next state by calculations of population and
+underpopulation, with characteristics such as solitude and overpopulation.
+Throughout this document, each of these
+will be referred to as a different type of ``cell'', following naming 
+conventions from the following gameboard visualization from https://bitstorm.org/gameoflife/
+
+\newpage
+
+\section* {Grid Size Module}
+
+\subsection*{Module}
+
+Grid Size
+
+\subsection* {Uses}
+
+N/A
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Constants}
+
+None
+
+\subsubsection* {Exported Types}
+
+None
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | l |}
+\hline
+\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+\hline
+GridSize & string & ~ & GridSize\\
+\hline
+getRows & ~ & $\mathbb{N}$ & ~\\
+\hline
+getColumns & ~ & $\mathbb{N}$ & ~\\
+\hline
+readDimensions & ~ & ~ & ~\\
+\hline
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+$rows$: $\mathbb{N}$\\
+$columns$:  $\mathbb{N}$\\
+$textFile$: $string$
+
+
+\subsubsection* {State Invariant}
+
+None
+
+\subsubsection* {Access Routine Semantics}
+
+GridSize($grid, textFile$):
+\begin{itemize}
+\item transition: $textFile = textFile$
+\item output: $out := \mathit{self}$
+\item exception: None
+\end{itemize}
+
+\noindent getRows():
+\begin{itemize}
+\item output: $out := rows$
+\item exception: None
+\end{itemize}
+
+\noindent getColumns():
+\begin{itemize}
+\item output: $out := columns$
+\item exception: None
+\end{itemize}
+
+\noindent readDimensions():
+\begin{itemize}
+\item transition: rows, columns := countRows(getline[0..(inBinaryGrid, Line)]) , countColumns(line.length)
+
+\item exception: None
+\end{itemize}
+
+\newpage
+
+
+
+
+\section* {Binary Grid Module}
+
+\subsection*{Module}
+
+BinaryGrid
+
+\subsection* {Uses}
+
+N/A
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Constants}
+
+None
+
+\subsubsection* {Exported Types}
+
+None
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | l |}
+\hline
+\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+\hline
+BinaryGrid & seq of (seq of char), &~ & \\
+~ & seq of (seq of char) &  BinaryGrid & \\
+\hline
+toSeq & ~ & seq of (seq of char) & ~\\
+\hline
+toNextSeq & ~ & seq of (seq of char) & ~\\
+\hline
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+$grid$:  seq of (seq of char)\\
+$nextGrid$:  seq of (seq of char)
+
+
+\subsubsection* {State Invariant}
+
+None
+
+\subsubsection* {Assumptions}
+
+The constructor BinaryGrid is called for each object instance. The constructor cannot be called on
+a non-existing object.
+
+\subsubsection* {Access Routine Semantics}
+
+BinaryGrid($grid, nextGrid$):
+\begin{itemize}
+\item transition: $grid, nextGrid := grid, nextGrid$
+\item output: $out := \mathit{self}$
+\item exception: None
+\end{itemize}
+
+\noindent toSeq():
+\begin{itemize}
+\item output: $out := grid$
+
+\item exception: None
+\end{itemize}
+
+\noindent toNextSeq():
+\begin{itemize}
+\item output: $out := nextGrid$
+\item exception: None
+\end{itemize}
+
+\newpage
+
+
+
+\newpage
+
+\section* {Game State Module}
+
+\subsection*{Template Module}
+
+GameState
+
+\subsection* {Uses}
+
+N/A
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Types}
+
+\noindent None
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | l |}
+\hline
+\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+\hline
+GameState & $\mathbb{N}$, $\mathbb{N}$, string & GameState & \\
+\hline
+getState & ~ & seq of (seq of char) & ~\\
+\hline
+getNextState & ~ & seq of (seq of char) & ~\\
+\hline
+initialState & ~ & ~ & ~\\
+\hline
+getAlive & ~ & $\mathbb{N}$ & ~\\
+\hline
+getDead & ~ & $\mathbb{N}$ & ~\\
+\hline
+getNextAlive & ~ & $\mathbb{N}$ & ~\\
+\hline
+getNextDead & ~ & $\mathbb{N}$ & ~\\
+\hline
+aliveNeighbours & $\mathbb{N}$, $\mathbb{N}$ & $\mathbb{N}$ & ~\\
+\hline
+cellRules & $\mathbb{N}$, $\mathbb{N}$ & ~ & ~\\
+\hline
+aliveVector & ~ & ~ & ~\\
+\hline
+nextState & ~ & ~ & ~\\
+\hline
+writeToFile & seq of (seq of char) & ~ & ~\\
+\hline
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+$grid$: seq of (seq of char)\\
+$liveGrid$: seq of (seq of char)\\
+$nextGrid$: seq of (seq of char)\\
+$textFile$: string\\
+$alive$: $\mathbb{N}$\\
+$dead$: $\mathbb{N}$\\
+$rows$: $\mathbb{N}$\\
+$columns$: $\mathbb{N}$
+
+
+
+\subsubsection* {State Invariant}
+
+None
+
+\subsubsection* {Assumptions \& Design Decisions}
+
+\begin{itemize}
+
+\item The GameState constructors is called before any other
+access routine is called on that instance. Once a GameState has been created, the constructor will not be called on it again.
+
+\item The constructor row and column natural numbers are defined before the constructor is called
+
+\item The textFile value exists and includes type char values inside of it
+
+\item The functions initialState(), aliveVector(), and nextState() are called as a way to build the next game state in the game. These functions are based on the values in the constructor
+
+\item This module is created only for the next state of the game, not for infinitely many states
+
+\end{itemize}
+
+\subsubsection* {Access Routine Semantics}
+
+\noindent GameState($rows, columns, string$):
+\begin{itemize}
+\item transition: grid, textFile, liveGrid, nextGrid, alive, dead, rows, columns := 
+
+grid, textFile, $\emptyset$, $\emptyset$, 0, 0, rows, columns
+\item output: $out := \mathit{self}$
+\item exception: None
+\end{itemize}
+
+\noindent getState():
+\begin{itemize} 
+\item output: $out := grid$
+\item exception: None
+\end{itemize}
+
+\noindent getNextState():
+\begin{itemize}
+\item output: $out := nextGrid$
+\item exception: None
+\end{itemize}
+
+\noindent initialState():
+\begin{itemize}
+\item transition: $(grid = \forall i, j \in textFile : temp[i][j] = grid(n, \langle \rangle))$
+\item exception: None
+\end{itemize}
+
+\noindent getAlive():
+\begin{itemize}
+\item transition: $(+alive : \mathbb{N} | alive \in grid \land alive =  '@' : 1)$
+\item output: $out := alive$
+\item exception: None
+\end{itemize}
+
+\noindent getDead():
+\begin{itemize}
+\item transition: $(+dead : \mathbb{N} | dead \in grid \land dead =  '-' : 1)$
+\item output: $out := dead$
+\item exception: None
+\end{itemize}
+
+\noindent getNextAlive():
+\begin{itemize}
+\item transition: $(+alive : \mathbb{N} | alive \in nextGrid \land alive =  '@' : 1)$
+\item output: $out := alive$
+\item exception: None
+\end{itemize}
+
+\noindent getNextDead():
+\begin{itemize}
+\item transition: $(+dead : \mathbb{N} | dead \in nextGrid \land dead =  '-' : 1)$
+\item output: $out := dead$
+\item exception: None
+\end{itemize}
+
+\noindent aliveVector():
+\begin{itemize}
+\item transition: $(liveGrid = \forall i, j \in grid : aliveNeighbours(i, j) = liveGrid(n, \langle \rangle))$
+
+$\land$ writeToFile(nextGrid)
+\item exception: None
+\end{itemize}
+
+\noindent nextState():
+\begin{itemize}
+\item transition: $(nextGrid = \forall i, j \in grid : cellRules(i, j) = nextGrid(n, \langle \rangle))$
+\item exception: None
+\end{itemize}
+
+
+
+\subsection*{Local Functions}
+
+\noindent cellRules: $\mathbb{N} \times \mathbb{N} \rightarrow \mbox{(char)}$\\
+\noindent cellRules ($i, j$) = s such that it follows the liveGrid and rules of the game\\
+
+\noindent aliveNeighbours: $\mathbb{N} \times \mathbb{N} \rightarrow \mathbb{N}$\\
+\noindent aliveNeighbours ($i, j$) = s such that $(+alive : \mathbb{N} | alive \in grid[i][j] \land alive =  '@' : 1)$ \\
+
+\noindent writeToFile: seq of (seq of char) $\rightarrow$ transition\\
+\noindent writeToFile (seq of (seq of char)) = transition such that 
+
+$(new file = \forall i, j \in$ seq of (seq of char) : (seq of (seq of char))[i][j] = new file\\
+
+
+\newpage
+
+\end{document}
